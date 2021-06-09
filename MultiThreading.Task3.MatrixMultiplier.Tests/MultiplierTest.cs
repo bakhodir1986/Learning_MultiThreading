@@ -15,14 +15,43 @@ namespace MultiThreading.Task3.MatrixMultiplier.Tests
             TestMatrix3On3(new MatricesMultiplierParallel());
         }
 
+        private int CalculateEffectiveMatrixSize()
+        {
+            long regularFuncTime;
+            long parallelFuncTime;
+            int rowColCounter = 0;
+
+            do
+            {
+                rowColCounter++;
+                var firstMatrixCalc = new Matrix(rowColCounter, rowColCounter, true);
+                var secondMatrixCalc = new Matrix(rowColCounter, rowColCounter, true);
+
+                var watchParallel = System.Diagnostics.Stopwatch.StartNew();
+                new MatricesMultiplierParallel().Multiply(firstMatrixCalc, secondMatrixCalc);
+                parallelFuncTime = watchParallel.ElapsedMilliseconds;
+
+                var watchRegular = System.Diagnostics.Stopwatch.StartNew();
+                new MatricesMultiplier().Multiply(firstMatrixCalc, secondMatrixCalc);
+                regularFuncTime = watchRegular.ElapsedMilliseconds;
+
+
+            } while (regularFuncTime <= parallelFuncTime);
+
+            return rowColCounter;
+        }
+
         [TestMethod]
         public void ParallelEfficiencyTest()
         {
             // todo: implement a test method to check the size of the matrix which makes parallel multiplication more effective than
             // todo: the regular one
 
-            var firstMatrix = new Matrix(100, 100, true);
-            var secondMatrix = new Matrix(100, 100, true);
+
+            var rowColCounter = CalculateEffectiveMatrixSize();
+
+            var firstMatrix = new Matrix(rowColCounter, rowColCounter, true);
+            var secondMatrix = new Matrix(rowColCounter, rowColCounter, true);
 
             IMatrix resultParallelMatrix = new MatricesMultiplierParallel().Multiply(firstMatrix, secondMatrix);
 
