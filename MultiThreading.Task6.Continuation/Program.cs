@@ -35,24 +35,20 @@ namespace MultiThreading.Task6.Continuation
 
                 Console.WriteLine("Task 1");
 
-                if (option != null && (option.Equals("a") || option.Equals("A")))
+                switch (option)
                 {
-                    //
-                }
-                else if (option != null && (option.Equals("b") || option.Equals("B")))
-                {
-                    throw new ApplicationException("NotOnRanToCompletion");
-                }
-                else if (option != null && (option.Equals("c") || option.Equals("C")))
-                {
-                    throw new ApplicationException("OnlyOnFaulted");
-                }
-                else if (option != null && (option.Equals("d") || option.Equals("D")))
-                {
-                    if (ct.IsCancellationRequested)
-                    {
-                        ct.ThrowIfCancellationRequested();
-                    }
+                    case "a":
+                        break;
+                    case "b":
+                        throw new ApplicationException("NotOnRanToCompletion");
+                    case "c":
+                        throw new ApplicationException("OnlyOnFaulted");
+                    case "d":
+                        if (ct.IsCancellationRequested)
+                        {
+                            ct.ThrowIfCancellationRequested();
+                        }
+                        break;
                 }
 
             }, tokenSource2.Token);
@@ -81,14 +77,14 @@ namespace MultiThreading.Task6.Continuation
 
                 Console.WriteLine("Task OnlyOnFaulted");
 
-            }, TaskContinuationOptions.OnlyOnFaulted);
+            }, TaskContinuationOptions.DenyChildAttach & TaskContinuationOptions.OnlyOnFaulted);
 
             //Continuation task should be executed outside of the thread pool when the parent task would be cancelled.
             parentTask.ContinueWith(antecedent => {
 
                 Console.WriteLine("Task OnlyOnCanceled");
 
-            }, TaskContinuationOptions.OnlyOnCanceled);
+            }, TaskContinuationOptions.DenyChildAttach & TaskContinuationOptions.OnlyOnCanceled);
 
             Console.ReadLine();
         }
