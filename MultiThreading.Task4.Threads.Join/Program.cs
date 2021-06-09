@@ -14,6 +14,11 @@ using System.Threading;
 
 namespace MultiThreading.Task4.Threads.Join
 {
+    public enum TaskOptions
+    {
+        OptionA,
+        OptionB
+    }
     class Program
     {
         private static readonly Semaphore Semaphore = new Semaphore(0, 1);
@@ -68,8 +73,7 @@ namespace MultiThreading.Task4.Threads.Join
         {
             if (threadState > 0)
             {
-                Thread thread = new Thread(DoSomeWorkA) {Name = "Thread" + threadState};
-                thread.IsBackground = true;
+                Thread thread = new Thread(DoSomeWorkA) {Name = "Thread" + threadState, IsBackground = true};
                 thread.Start(threadState);
                 thread.Join();
             }
@@ -77,18 +81,34 @@ namespace MultiThreading.Task4.Threads.Join
 
         private static void DoSomeWorkA(object threadState)
         {
+            DoSomeWork(threadState, TaskOptions.OptionA);
+        }
+
+
+        private static void DoSomeWork(object threadState, TaskOptions option)
+        {
             int threadStateNum = (int)threadState;
 
             Thread.Sleep(200);
 
             threadStateNum--;
 
-            Console.WriteLine("DoSomeWorkA - thread.Name: " + Thread.CurrentThread.Name + "- threadStateNum is :" + threadStateNum);
+            if (option == TaskOptions.OptionA)
+            {
+                Console.WriteLine("DoSomeWorkA - thread.Name: " + Thread.CurrentThread.Name + "- threadStateNum is :" + threadStateNum);
 
-            TaskImplimentationA(threadStateNum);
+                TaskImplimentationA(threadStateNum);
+            }
+            else
+            {
+                Console.WriteLine("DoSomeWorkB - thread.ManagedThreadId: " + Thread.CurrentThread.ManagedThreadId +
+                                  "- threadStateNum is :" + threadStateNum);
+
+                TaskImplimentationB(threadStateNum);
+            }
         }
 
-        
+
 
         private static void TaskImplimentationB(int threadState)
         {
@@ -113,18 +133,7 @@ namespace MultiThreading.Task4.Threads.Join
 
         private static void DoSomeWorkB(object threadState)
         {
-             Thread.Sleep(200);
-
-             int threadStateNum = (int) threadState;
-
-             threadStateNum--;
-
-             Console.WriteLine("DoSomeWorkB - thread.ManagedThreadId: " + Thread.CurrentThread.ManagedThreadId +
-                               "- threadStateNum is :" + threadStateNum);
-
-             TaskImplimentationB(threadStateNum);
+             DoSomeWork(threadState, TaskOptions.OptionB);
         }
-
-
     }
 }

@@ -35,8 +35,7 @@ namespace MultiThreading.Task2.Chaining
             Console.WriteLine("Fourth Task – calculates the average value. All this tasks should print the values to console");
             Console.WriteLine();
 
-            // feel free to add your code
-            Task<int[]> task1 = Task.Run(() => {
+            Task<int[]> taskCreator = Task.Run(() => {
 
                 int Min = 0;
                 int Max = 10;
@@ -53,7 +52,7 @@ namespace MultiThreading.Task2.Chaining
             });
 
 
-            Task<int[]> task2 = task1.ContinueWith(antecedent => {
+            Task<int[]> taskMultiplier = taskCreator.ContinueWith(antecedent => {
 
                 var randomArray = antecedent.Result;
                 Random randNum = new Random();
@@ -71,7 +70,7 @@ namespace MultiThreading.Task2.Chaining
                 return randomArray;
             });
 
-            Task<int[]> task3 = task2.ContinueWith(antecedent => {
+            Task<int[]> taskSorter = taskMultiplier.ContinueWith(antecedent => {
 
                 var randomArray = antecedent.Result;
 
@@ -82,7 +81,7 @@ namespace MultiThreading.Task2.Chaining
                 return randomArray;
             });
 
-            Task<double> task4 = task3.ContinueWith(antecedent => {
+            taskSorter.ContinueWith(antecedent => {
 
                 var randomArray = antecedent.Result;
 
