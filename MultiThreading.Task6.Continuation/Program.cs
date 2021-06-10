@@ -24,8 +24,8 @@ namespace MultiThreading.Task6.Continuation
             Console.WriteLine("Demonstrate the work of the each case with console utility.");
             Console.WriteLine();
 
-            var tokenSource2 = new CancellationTokenSource();
-            CancellationToken ct = tokenSource2.Token;
+            var tokenSource = new CancellationTokenSource();
+            CancellationToken ct = tokenSource.Token;
 
             Console.WriteLine("Enter option character: ");
             var option = Console.ReadLine();
@@ -51,11 +51,11 @@ namespace MultiThreading.Task6.Continuation
                         break;
                 }
 
-            }, tokenSource2.Token);
+            }, tokenSource.Token);
 
             if (option != null && (option.Equals("d") || option.Equals("D")))
             {
-                tokenSource2.Cancel();
+                tokenSource.Cancel();
             }
 
             //Continuation task should be executed regardless of the result of the parent task.
@@ -77,14 +77,14 @@ namespace MultiThreading.Task6.Continuation
 
                 Console.WriteLine("Task OnlyOnFaulted");
 
-            }, TaskContinuationOptions.DenyChildAttach & TaskContinuationOptions.OnlyOnFaulted);
+            }, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted);
 
             //Continuation task should be executed outside of the thread pool when the parent task would be cancelled.
             parentTask.ContinueWith(antecedent => {
 
                 Console.WriteLine("Task OnlyOnCanceled");
 
-            }, TaskContinuationOptions.DenyChildAttach & TaskContinuationOptions.OnlyOnCanceled);
+            }, TaskContinuationOptions.HideScheduler | TaskContinuationOptions.OnlyOnCanceled  );
 
             Console.ReadLine();
         }
