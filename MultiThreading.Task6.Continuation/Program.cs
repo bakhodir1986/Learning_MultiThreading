@@ -84,7 +84,12 @@ namespace MultiThreading.Task6.Continuation
 
                 Console.WriteLine("Task OnlyOnCanceled");
 
-            }, TaskContinuationOptions.HideScheduler | TaskContinuationOptions.OnlyOnCanceled  );
+                if (Thread.CurrentThread.IsThreadPoolThread)
+                {
+                    Console.WriteLine("Task LongRunning | OnlyOnCanceled");
+                }
+
+            }, TaskContinuationOptions.LongRunning | TaskContinuationOptions.OnlyOnCanceled);
 
             Console.ReadLine();
         }
